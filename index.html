@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelTour - Әуе билеттері мен Ыстық турлар</title>
+    <style>
+        /* Жалпы баптаулар */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; scroll-behavior: smooth; }
+        body { background-color: #f4f7f6; color: #333; }
+
+        /* БАСТЫ БЕТ (ҰШАҚ СУРЕТІ МЕН АҚ-КӨК СТИЛЬ) */
+        .welcome-section {
+            height: 100vh;
+            background: linear-gradient(rgba(30, 60, 114, 0.8), rgba(42, 82, 152, 0.8)), 
+                        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-section h1 { font-size: 3.5rem; font-weight: bold; margin-bottom: 15px; letter-spacing: 2px; }
+        .welcome-section p { font-size: 1.5rem; margin-bottom: 40px; opacity: 0.9; max-width: 600px; }
+
+        /* БАТЫРМАЛАР СТИЛІ */
+        .buttons-container { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
+        
+        .nav-btn {
+            display: inline-block;
+            background-color: white;
+            color: #1e3c72;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover {
+            background-color: transparent;
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        /* НЕГІЗГІ БӨЛІМДЕР */
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        h2 { text-align: center; margin-bottom: 40px; color: #1e3c72; font-size: 2rem; text-transform: uppercase; }
+        
+        /* Карточкалар торы */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 60px; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .card-img { height: 220px; background-size: cover; background-position: center; }
+        
+        /* Суреттер */
+        .img-dubai { background-image: url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=500&q=80'); }
+        .img-antalya { background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=500&q=80'); }
+        .img-almaty { background-image: url('https://images.unsplash.com/photo-1589561253898-768105ca91a8?auto=format&fit=crop&w=500&q=80'); }
+        .img-istanbul { background-image: url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=500&q=80'); }
+
+        .card-body { padding: 25px; }
+        .card-title { font-size: 1.4rem; margin-bottom: 10px; color: #2c3e50; font-weight: bold; }
+        .card-text { color: #7f8c8d; font-size: 1rem; margin-bottom: 20px; line-height: 1.6; }
+        .price { font-size: 1.5rem; font-weight: bold; color: #2a5298; margin-bottom: 20px; }
+        
+        .btn-buy { display: block; text-align: center; background: #25d366; color: white; text-decoration: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; cursor: pointer; border: none; width: 100%; }
+        .btn-buy:hover { background: #20ba5a; }
+        .btn-blue { background: #2a5298; }
+        .btn-blue:hover { background: #1e3c72; }
+        .btn-orange { background: #ff9800; color: white; }
+        .btn-orange:hover { background: #e68a00; }
+
+        /* Ортақ терезе (Модальное окно) стилі */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+            position: relative;
+            animation: openModal 0.4s ease;
+        }
+
+        /* ТУР ОКОШКАСЫ ҮШІН ГАВАЙ ФОНЫ */
+        .hawaii-bg {
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), 
+                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80') no-repeat center center/cover;
+        }
+
+        @keyframes openModal {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close-btn:hover { color: #333; }
+
+        .modal h3 { margin-bottom: 20px; color: #1e3c72; text-align: center; }
+        .modal p { font-size: 1.1rem; text-align: center; margin-bottom: 20px; color: #555; line-height: 1.5; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 0.95rem; color: #333; }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+        .form-group input:focus { border-color: #2a5298; }
+
+        .whatsapp-number-box {
+            background-color: #e8f5e9;
+            border: 2px dashed #25d366;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 20px;
+        }
+
+        footer { background: #1e3c72; color: white; text-align: center; padding: 25px; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <!-- БАСТЫ БЕТ -->
+    <div class="welcome-section">
+        <h1>TRAVEL TOUR</h1>
+        <p>Арзан әуе билеттері мен ең ыстық турларды бізбен бірге таңдаңыз!</p>
+        
+        <div class="buttons-container">
+            <div onclick="openTourModal('Кез келген бағыт')" class="nav-btn">✈️ Тур Сатып Алу</div>
+            <div onclick="openTicketModal('Кез келген бағыт')" class="nav-btn">🎫 Әуе Билеттері</div>
+        </div>
+    </div>
+
+    <!-- ТУРЛАР БӨЛІМІ -->
+    <div class="container" id="tours">
+        <h2>Ыстық Турлар жиынтығы</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-img img-dubai"></div>
+                <div class="card-body">
+                    <div class="card-title">Дубай, БАӘ (7 күн)</div>
+                    <p class="card-text">5★ қонақ үй, таңғы ас, трансфер және сақтандыру бағаның ішінде. Керемет демалыс!</p>
+                    <div class="price">250 000 ₸ бастап</div>
+                    <button onclick="openTourModal('Дубай (7 күн)')" class="btn-buy">Турға тапсырыс беру</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img img-antalya"></div>
+                <div class="card-body">
+                    <div class="card-title">Анталия, Түркия (6 күн)</div>
+                    <p class="card-text">"All Inclusive" (Бәрі қосылған) жүйесі. Тікелей рейс, жағажайға жақын қонақ үй.</p>
+                    <div class="price">190 000 ₸ бастап</div>
+                    <button onclick="openTourModal('Анталия (6 күн)')" class="btn-buy">Турға тапсырыс беру</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ӘУЕ БИЛЕТТЕРІ БӨЛІМІ -->
+    <div class="container" id="tickets" style="background-color: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.02);">
+        <h2>Танымал әуе билеттері</h2>
+        <div class="grid">
+            <div class="card">
+                <div class="card-img img-almaty"></div>
+                <div class="card-body">
+                    <div class="card-title">Алматы ⇄ Астана</div>
+                    <p class="card-text">Екі жаққа бірдей тиімді баға. Багаж қосылған. Ең танымал рейстер.</p>
+                    <div class="price">35 000 ₸ бастап</div>
+                    <button onclick="openTicketModal('Алматы - Астана')" class="btn-buy btn-blue">Билет брондау</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img img-istanbul"></div>
+                <div class="card-body">
+                    <div class="card-title">Шымкент ⇄ Стамбул</div>
+                    <p class="card-text">Тікелей рейстер, ыңғайлы уақыттар. Түркияға ең арзан билеттер тек бізде.</p>
+                    <div class="price">95 000 ₸ бастап</div>
+                    <button onclick="openTicketModal('Шымкент - Стамбул')" class="btn-buy btn-blue">Билет брондау</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🏖️ 1. ТУРЛАРҒА АРНАЛҒАН ОКОШКА (ГАВАЙ ФОНЫ) 🏖️ -->
+    <div id="tourModal" class="modal">
+        <div class="modal-content hawaii-bg" id="tourModalContent">
+            <!-- Бұл жердегі мазмұн JavaScript арқылы динамикалық өзгереді -->
+        </div>
+    </div>
+
+    <!-- 🎫 2. ӘУЕ БИЛЕТТЕРІНЕ АРНАЛҒАН АҚ ОКОШКА 🎫 -->
+    <div id="ticketModal" class="modal">
+        <div class="modal-content" id="ticketModalContent">
+            <!-- Бұл жердегі мазмұн JavaScript арқылы динамикалық өзгереді -->
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 TravelTour Агенттігі. Барлық құқықтар қорғалған.</p>
+    </footer>
+
+    <!-- ОКОШКА КЕЗЕҢДЕРІН БАСҚАРУ СЕКРЕТТІ КОДЫ -->
+    <script>
+        var tourModal = document.getElementById("tourModal");
+        var ticketModal = document.getElementById("ticketModal");
+        
+        var currentTourName = "";
+        var currentTicketRoute = "";
+        
+        var today = new Date().toISOString().split('T')[0];
+
+        // --- ТУР ОКОШКАСЫ: 1-КЕЗЕҢ (Таңдау) ---
+        function openTourModal(defaultTour) {
+            currentTourName = defaultTour;
+            tourModal.style.display = "flex";
+            
+            document.getElementById("tourModalContent").innerHTML = `
+                <span class="close-btn" onclick="closeTourModal()">&times;</span>
+                <h3>🏖️ Турды таңдау</h3>
+                <div class="form-group">
+                    <label>Қай елге/турға барғыңыз келеді:</label>
+                    <input type="text" id="tourRouteInput" value="${defaultTour}" placeholder="Мысалы: Дубай, Түркия">
+                </div>
+                <div class="form-group">
+                    <label>Ұшуды жоспарлаған күніңіз:</label>
+                    <input type="date" id="tourDateInput" min="${today}" value="${today}">
+                </div>
+                <button onclick="nextTourStep()" class="btn-buy">Жалғастыру</button>
+            `;
+        }
+
+        // --- ТУР ОКОШКАСЫ: 2-КЕЗЕҢ (Купить жазуы шығады) ---
+        function nextTourStep() {
+            var route = document.getElementById("tourRouteInput").value;
+            var date = document.getElementById("tourDateInput").value;
+            
+            if(!route || !date) { alert("Өрістерді толтырыңыз!"); return; }
+            
+            document.getElementById("tourModalContent").innerHTML = `
+                <span class="close-btn" onclick="closeTourModal()">&times;</span>
+                <h3>🏖️ Тапсырысты рәсімдеу</h3>
+                <p>Сіз <b>${route}</b> турын <b>${date}</b> күніне таңдадыңыз.</p>
+                <button onclick="confirmTourPurchase('${encodeURIComponent(route)}', '${encodeURIComponent(date)}')" class="btn-buy btn-orange">Купить</button>
+            `;
+        }
+
+        // --- ТУР ОКОШКАСЫ: 3-КЕЗЕҢ (Подтвердите покупку + WhatsApp номер) ---
+        function confirmTourPurchase(route, date) {
+            document.getElementById("tourModalContent").innerHTML = `
+                <span class="close-btn" onclick="closeTourModal()">&times;</span>
+                <h3>⚠️ Потдвердите покупку</h3>
+                <p>Тапсырысты толық аяқтау және растау үшін төмендегі менеджер нөміріне өтіңіз:</p>
+                <div class="whatsapp-number-box">📞 +7 (776) 732-88-65</div>
+                <button onclick="finalSendTour('${route}', '${date}')" class="btn-buy">Растау және WhatsApp-қа өту</button>
+            `;
+        }
+
+        function finalSendTour(route, date) {
+            var whatsappUrl = "https://wa.me/77767328865?text=Сәлеметсіз бе! Маған " + route + " бойынша, " + date + " күніне демалыс турын сатып алу керек.";
+            window.open(whatsappUrl, '_blank');
+            closeTourModal();
+        }
+
+        function closeTourModal() { tourModal.style.display = "none"; }
+
+
+        // --- БИЛЕТ ОКОШКАСЫ: 1-КЕЗЕҢ (Таңдау) ---
+        function openTicketModal(defaultRoute) {
+            currentTicketRoute = defaultRoute;
+            ticketModal.style.display = "flex";
+            
+            document.getElementById("ticketModalContent").innerHTML = `
+                <span class="close-btn" onclick="closeTicketModal()">&times;</span>
+                <h3>🎫 Әуе билетін таңдау</h3>
+                <div class="form-group">
+                    <label>Қай бағытқа (Қайдан - Қайда):</label>
+                    <input type="text" id="routeInput" value="${defaultRoute}" placeholder="Мысалы: Алматы - Астана">
+                </div>
+                <div class="form-group">
+                    <label>Ұшу күнін таңдаңыз:</label>
+                    <input type="date" id="dateInput" min="${today}" value="${today}">
+                </div>
+                <button onclick="nextTicketStep()" class="btn-buy btn-blue">Жалғастыру</button>
+            `;
+        }
+
+        // --- БИЛЕТ ОКОШКАСЫ: 2-КЕЗЕҢ (Купить жазуы шығады) ---
+        function nextTicketStep() {
+            var route = document.getElementById("routeInput").value;
+            var date = document.getElementById("dateInput").value;
+            
+            if(!route || !date) { alert("Өрістерді толтырыңыз!"); return; }
+            
+            document.getElementById("ticketModalContent").innerHTML = `
+                <span class="close-btn" onclick="closeTicketModal()">&times;</span>
+                <h3>🎫 Тапсырысты рәсімдеу</h3>
+                <p><b>${route}</b> бағыты, ұшу күні: <b>${date}</b></p>
+                <button onclick="confirmTicketPurchase('${encodeURIComponent(route)}', '${encodeURIComponent(date)}')" class="btn-buy btn-orange">Купить</button>
+            `;
+        }
+
+        // --- БИЛЕТ ОКОШКАСЫ: 3-КЕЗЕҢ (Подтвердите покупку + WhatsApp номер) ---
+        function confirmTicketPurchase(route, date) {
+            document.getElementById("ticketModalContent").innerHTML = `
+                <span class="close-btn" onclick="closeTicketModal()">&times;</span>
+                <h3>⚠️ Потдвердите покупку</h3>
+                <p>Билетті сатып алуды нақты растау үшін мына нөмірге сұраныс жіберіңіз:</p>
+                <div class="whatsapp-number-box">📞 +7 (776) 732-88-65</div>
+                <button onclick="finalSendTicket('${route}', '${date}')" class="btn-buy">Растау және WhatsApp-қа өту</button>
+            `;
+        }
+
+        function finalSendTicket(route, date) {
+            var whatsappUrl = "https://wa.me/77767328865?text=Сәлеметсіз бе! Маған " + route + " бағытына, " + date + " күніне әуе билетін сатып алу керек.";
+            window.open(whatsappUrl, '_blank');
+            closeTicketModal();
+        }
+
+        function closeTicketModal() { ticketModal.style.display = "none"; }
+
+        // Сыртты басқанда жабылуы
+        window.onclick = function(event) {
+            if (event.target == tourModal) { closeTourModal(); }
+            if (event.target == ticketModal) { closeTicketModal(); }
+        }
+    </script>
+
+</body>
+</html>
