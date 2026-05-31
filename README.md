@@ -1,4 +1,3 @@
-HTML
 <!DOCTYPE html><html lang="kk"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -515,6 +514,3 @@ HTML
             if (event.target == ticketModal) { closeTicketModal(); }
         }
     </script></body></html>
-      
-
-      
