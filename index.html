@@ -1,17 +1,35 @@
-<!DOCTYPE html><html lang="kk"><head>
+Ол үшін билет іздеу скриптінің ішіне арнайы динамикалық баға есептеу логикасын қостым.
+
+Енді жүйе пайдаланушы таңдаған ұшу күні мен қазіргі уақытты (бүгінгі күн: 31 мамыр 2026 жыл) салыстырады:
+
+Алдын ала сатып алса (ұшуға 10 күннен көп уақыт қалса): Билет бағасына 20% жеңілдік жасалады (арзан болады).
+
+Жақын күндерге сатып алса (ұшуға 3 күннен аз уақыт қалса): Билет бағасы шұғыл рейс болғандықтан 30%-ға қымбаттайды.
+
+Қалыпты уақытта (3 күннен 10 күнге дейінгі аралық): Базалық стандартты баға сақталады.
+
+Сондай-ақ, нәтиже шыққан кезде пайдаланушыға қай тариф қолданылғаны (мысалы: «🔥 Алдын ала брондау жеңілдігі (-20%)» немесе «⚠️ Шұғыл рейс тарифі (+30%)») нақты жазылып тұрады.
+
+Жаңаланған толық кодты төменнен көшіріп ал:
+
+🛠️ Жаңаланған веб-сайт коды (index.html):
+HTML
+<!DOCTYPE html>
+<html lang="kk">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelTour - Әуе билеттері мен Ыстық турлар</title>
     <style>
         /* Жалпы баптаулар */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; scroll-behavior: smooth; }
-        body { background-color: #f0f4f8; color: #333; }
+        body { background-color: #f0f4f8; color: #333; position: relative; }
 
-        /* БАСТЫ БЕТ (ҰШАҚ СУРЕТІ МЕН АҚ-КӨК СТИЛЬ) */
+        /* БАСТЫ БЕТ */
         .welcome-section {
             height: 100vh;
             background: linear-gradient(rgba(15, 32, 67, 0.85), rgba(27, 55, 107, 0.85)), 
-                        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+                        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto-format&fit=crop&w=1920&q=80') no-repeat center center/cover;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -22,495 +40,502 @@
         }
 
         .welcome-section h1 { font-size: 4rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 3px; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .welcome-section p { font-size: 1.6rem; margin-bottom: 40px; opacity: 0.95; max-width: 650px; font-weight: 300; }
+        .welcome-section p { font-size: 1.6rem; margin-bottom: 40px; opacity: 0.9; max-width: 650px; font-weight: 300; line-height: 1.4; }
 
         /* БАТЫРМАЛАР СТИЛІ МЕН АНИМАЦИЯСЫ */
-        .buttons-container { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
-        
-        .nav-btn {
-            display: inline-block;
-            background: white;
-            color: #1b376b;
-            padding: 18px 45px;
-            font-size: 1.3rem;
+        .cta-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 16px 40px;
+            font-size: 1.2rem;
             font-weight: bold;
             text-decoration: none;
             border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid white;
-            cursor: pointer;
-            user-select: none;
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: inline-block;
+        }
+        .cta-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 107, 107, 0.6);
+            background: linear-gradient(135deg, #ff5252, #ff6b6b);
         }
 
-        .nav-btn:hover {
-            background: transparent;
-            color: white;
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(255,255,255,0.2);
-        }
+        /* КОНТЕНТ СЕКЦИЯЛАРЫНЫҢ ОРТАҚ СТИЛІ */
+        .container { max-width: 1200px; margin: 0 auto; padding: 80px 20px; }
+        h2 { font-size: 2.5rem; color: #0f2043; text-align: center; margin-bottom: 50px; font-weight: 700; position: relative; }
+        h2::after { content: ''; display: block; width: 80px; height: 4px; background: #ff6b6b; margin: 15px auto 0; border-radius: 2px; }
 
-        .nav-btn:active {
-            transform: translateY(2px) scale(0.95);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-        }
-
-        /* НЕГІЗГІ БӨЛІМДЕР */
-        .container { max-width: 1200px; margin: 0 auto; padding: 70px 20px; }
-        h2 { text-align: center; margin-bottom: 45px; color: #1b376b; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; position: relative; }
-        h2::after { content: ''; display: block; width: 60px; height: 4px; background: #2a5298; margin: 10px auto 0; border-radius: 2px; }
-        
-        /* Карточкалар торы */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 60px; }
-        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.03); }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.12); }
-        .card-img { height: 200px; background-size: cover; background-position: center; position: relative; }
-        
-        /* Суреттер */
-        .img-dubai { background-image: url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=500&q=80'); }
-        .img-antalya { background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=500&q=80'); }
-        .img-almaty { background-image: url('https://images.unsplash.com/photo-1589561253898-768105ca91a8?auto=format&fit=crop&w=500&q=80'); }
-        .img-aktobe { background-image: url('https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=500&q=80'); }
-        .img-tashkent { background-image: url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=500&q=80'); }
-        .img-shymkent { background-image: url('https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=500&q=80'); }
-
-        .card-body { padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-title { font-size: 1.3rem; margin-bottom: 10px; color: #2c3e50; font-weight: 700; }
-        .card-text { color: #7f8c8d; font-size: 0.95rem; margin-bottom: 20px; line-height: 1.6; }
-        .price { font-size: 1.4rem; font-weight: bold; color: #2a5298; margin-bottom: 20px; background: #eef3f9; padding: 8px 15px; border-radius: 10px; display: inline-block; width: max-content; }
-        
-        /* КАРТОЧКА ІШІНДЕГІ БАТЫРМАЛАР */
-        .btn-buy { 
-            display: block; 
-            text-align: center; 
-            background: linear-gradient(135deg, #25d366, #1ebd54);
-            color: white; 
-            text-decoration: none; 
-            padding: 14px; 
-            border-radius: 12px; 
-            font-weight: bold; 
-            font-size: 1.1rem; 
-            transition: all 0.2s ease; 
-            cursor: pointer; 
-            border: none; 
-            width: 100%;
-            user-select: none;
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
-        }
-        .btn-buy:hover { background: linear-gradient(135deg, #20ba5a, #1a9f47); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4); }
-        
-        .btn-blue { background: linear-gradient(135deg, #2a5298, #1e3c72); box-shadow: 0 5px 15px rgba(42, 82, 152, 0.3); }
-        .btn-blue:hover { background: linear-gradient(135deg, #1e3c72, #152b52); box-shadow: 0 8px 20px rgba(42, 82, 152, 0.4); }
-        
-        .btn-orange { background: linear-gradient(135deg, #ff9800, #f57c00); color: white; box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3); }
-        .btn-orange:hover { background: linear-gradient(135deg, #e68a00, #d86d00); box-shadow: 0 8px 20px rgba(255, 152, 0, 0.4); }
-
-        /* 🆕 О НАС (БІЗ ТУРАЛЫ) БӨЛІМІНІҢ ДИЗАЙНЫ */
-        .about-section { background: linear-gradient(135deg, #1b376b, #0f2043); color: white; padding: 80px 20px; text-align: center; }
-        .about-section h2 { color: white; }
-        .about-section h2::after { background: #ff9800; }
-        .about-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; align-items: center; margin-top: 40px; }
-        .about-text { font-size: 1.2rem; line-height: 1.8; opacity: 0.9; max-width: 800px; font-weight: 300; }
-        
-        /* Аэропорт концепттерінің торы */
-        .airport-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
-        .airport-badge { background: rgba(255, 255, 255, 0.08); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: left; transition: 0.3s; }
-        .airport-badge:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-5px); }
-        .airport-badge h4 { color: #ff9800; font-size: 1.2rem; margin-bottom: 8px; }
-        .airport-badge p { font-size: 0.9rem; opacity: 0.8; line-height: 1.4; }
-
-        /* Модальное окно */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 32, 67, 0.6);
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 35px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 460px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        /* БИЛЕТ ИЗДЕУ БЛОГЫ */
+        .search-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            margin-top: -100px;
             position: relative;
-            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            z-index: 10;
         }
-
-        .hawaii-bg {
-            background: linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)), 
-                        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80') no-repeat center center/cover;
-        }
-
-        @keyframes bounceIn {
-            from { transform: translateY(-80px) scale(0.9); opacity: 0; }
-            to { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        .close-btn { position: absolute; top: 18px; right: 22px; font-size: 1.8rem; cursor: pointer; color: #999; transition: 0.2s; }
-        .close-btn:hover { color: #333; transform: rotate(90deg); }
-
-        .modal h3 { margin-bottom: 25px; color: #1b376b; text-align: center; font-size: 1.6rem; font-weight: 700; }
-        .modal p { font-size: 1.1rem; text-align: center; margin-bottom: 25px; color: #4a5568; line-height: 1.6; }
-        
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; color: #4a5568; }
-        .form-group input, .form-group select {
-            width: 100%;
+        .search-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .search-item { display: flex; flex-direction: column; }
+        .search-item label { font-size: 0.9rem; font-weight: 600; color: #5a738e; margin-bottom: 8px; text-transform: uppercase; }
+        .search-item input, .search-item select {
             padding: 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
             font-size: 1rem;
             outline: none;
-            background: white;
-            transition: all 0.2s;
-            color: #334155;
+            transition: border-color 0.3s;
         }
-        .form-group input:focus, .form-group select:focus { border-color: #2a5298; box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.15); }
-
-        .price-display {
-            background: linear-gradient(135deg, #fff8e1, #ffecb3);
-            border: 1px solid #ffe082;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #b78103;
-            margin-bottom: 20px;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
-
-        .whatsapp-number-box { background-color: #f0fdf4; border: 2px dashed #25d366; padding: 15px; border-radius: 14px; text-align: center; font-size: 1.3rem; font-weight: bold; color: #166534; margin-bottom: 20px; }
-        footer { background: #0f2043; color: white; text-align: center; padding: 30px; font-size: 1rem; font-weight: 300; border-top: 1px solid rgba(255,255,255,0.05); }
-    </style></head><body>
-
-    <!-- БАСТЫ БЕТ -->
-    <div class="welcome-section">
-        <h1>TRAVEL TOUR</h1>
-        <p>Ыңғайлы бағыттар, арзан әуе билеттері мен ең ыстық турлар жиынтығы!</p>
+        .search-item input:focus, .search-item select:focus { border-color: #1b376b; }
         
-        <div class="buttons-container">
-            <div onclick="openTourModal('Дубай')" class="nav-btn">✈️ Тур Сатып Алу</div>
-            <div onclick="openTicketModal('Алматы - Астана')" class="nav-btn">🎫 Әуе Билеттері</div>
-        </div>
-    </div>
+        .search-btn {
+            background-color: #1b376b;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .search-btn:hover { background-color: #0f2043; }
 
-    <!-- ТУРЛАР БӨЛІМІ -->
-    <div class="container" id="tours">
-        <h2>Ыстық Турлар жиынтығы</h2>
-        <div class="grid">
-            <div class="card">
-                <div class="card-img img-dubai"></div>
-                <div class="card-body">
-                    <div class="card-title">Дубай, БАӘ (Ыстық тур)</div>
-                    <p class="card-text">5★ қонақ үй, таңғы ас, трансфер және сақтандыру бағаның ішінде. 3 немесе 5 күндік демалыс!</p>
-                    <div class="price">150 000 ₸ бастап</div>
-                    <button onclick="openTourModal('Дубай')" class="btn-buy">Турға тапсырыс беру</button>
+        /* НӘТИЖЕ ШЫҒАТЫН БЛОК */
+        .results-section { display: none; margin-top: 30px; animation: fadeIn 0.5s ease; }
+        .ticket-card {
+            background: linear-gradient(to right, #ffffff 75%, #f8fafc 25%);
+            border-left: 5px solid #ff6b6b;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ЫСТЫҚ ТУРЛАР КАРТОЧКАЛАРЫ */
+        .deals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .deal-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        .deal-card:hover { transform: translateY(-10px); }
+        .deal-img { height: 220px; width: 100%; object-fit: cover; }
+        .badge {
+            position: absolute; top: 15px; left: 15px;
+            background: #ff6b6b; color: white; padding: 6px 12px;
+            font-size: 0.8rem; font-weight: bold; border-radius: 20px;
+        }
+        .deal-info { padding: 25px; }
+        .deal-info h3 { font-size: 1.4rem; color: #0f2043; margin-bottom: 10px; }
+        .deal-info p { color: #667085; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+        .deal-price { display: flex; justify-content: space-between; align-items: center; }
+        .price-tag { font-size: 1.5rem; font-weight: bold; color: #2ecc71; }
+
+        /* СЕРІКТЕСТЕР (ӘУЕ КОМПАНИЯЛАРЫ) БӨЛІМІ */
+        .partners-section { background-color: #ffffff; text-align: center; border-bottom: 1px solid #e1e8ed; }
+        .partners-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-top: 40px; justify-content: center; }
+        .partner-card {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #1b376b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        .partner-card:hover { transform: scale(1.05); border-color: #ff6b6b; background: white; }
+        .partner-icon { font-size: 2rem; margin-bottom: 10px; }
+
+        /* 3D МОДЕЛДЕУ (ӘУЕЖАЙ) СЕКЦИЯСЫ */
+        .airport-showcase { background: #f8fafc; }
+        .airport-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        @media (max-width: 768px) { .airport-grid { grid-template-columns: 1fr; } }
+        .airport-img { width: 100%; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .airport-details h3 { font-size: 1.8rem; color: #0f2043; margin-bottom: 15px; }
+        .airport-details ul { list-style: none; margin-top: 15px; }
+        .airport-details ul li { padding: 10px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; }
+        .airport-details ul li::before { content: '✈️'; margin-right: 10px; }
+
+        /* ПІКІРЛЕР БӨЛІМІ */
+        .reviews-bg { background-color: #1b376b; color: white; }
+        .reviews-bg h2 { color: white; }
+        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .review-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .client-info { display: flex; align-items: center; margin-bottom: 15px; }
+        .client-avatar { width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 2px solid #ff6b6b; }
+        .client-name h4 { font-size: 1.1rem; font-weight: 600; }
+        .client-name span { font-size: 0.85rem; color: #ff8e8e; }
+        .review-text { font-style: italic; opacity: 0.85; line-height: 1.6; }
+
+        /* СҰРАҚ-ЖАУАП БӨЛІМІ (FAQ) */
+        .faq-box { max-width: 800px; margin: 0 auto; }
+        .faq-item { background: white; margin-bottom: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); overflow: hidden; }
+        .faq-question { padding: 20px; font-weight: 600; color: #0f2043; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s; }
+        .faq-question:hover { background: #f8fafc; }
+        .faq-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: all 0.3s ease; color: #555; line-height: 1.6; }
+        .faq-item.active .faq-answer { padding: 20px; max-height: 200px; border-top: 1px solid #edf2f7; }
+
+        /* БІЗ ТУРАЛЫ БӨЛІМІ */
+        .about-section { background-color: #ffffff; text-align: center; }
+        .about-text { max-width: 800px; margin: 0 auto 40px; font-size: 1.2rem; line-height: 1.8; color: #555; }
+
+        footer { background-color: #0f2043; color: rgba(255,255,255,0.7); text-align: center; padding: 30px; font-size: 0.95rem; }
+
+        /* 💳 ТӨЛЕМ ТЕРЕЗЕСІ (MODAL) СТИЛІ */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .payment-modal {
+            background: white; padding: 35px; border-radius: 20px;
+            width: 100%; max-width: 420px; box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative; animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #aaa; }
+        .close-modal:hover { color: #333; }
+        .modal-title { font-size: 1.5rem; color: #0f2043; margin-bottom: 20px; text-align: center; font-weight: 700; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: #5a738e; margin-bottom: 6px; text-transform: uppercase; }
+        .form-group input { padding: 12px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 1rem; outline: none; }
+        .form-group input:focus { border-color: #1b376b; }
+        .card-extra { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* 🟢 ТҰРАҚТЫ WHATSAPP ҚОЛДАУ БАТЫРМА СТИЛІ */
+        .whatsapp-support {
+            position: fixed; bottom: 25px; right: 25px;
+            background-color: #25d366; color: white;
+            padding: 14px 22px; border-radius: 50px;
+            font-weight: bold; font-size: 1rem; text-decoration: none;
+            display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+            z-index: 999; transition: all 0.3s ease;
+        }
+        .whatsapp-support:hover { transform: scale(1.08) translateY(-3px); box-shadow: 0 10px 25px rgba(37, 211, 102, 0.6); }
+        .whatsapp-icon { font-size: 1.4rem; }
+    </style>
+</head>
+<body>
+
+    <section class="welcome-section">
+        <h1>TravelTour</h1>
+        <p>Аршагүл, айлар бойы іздеген ең арзан әуе билеттері мен ұмытылмас ыстық турлар тек осында!</p>
+        <a href="#search" class="cta-btn">Билет іздеу</a>
+    </section>
+
+    <div class="container" id="search">
+        <div class="search-box">
+            <div class="search-grid">
+                <div class="search-item">
+                    <label>Қайдан</label>
+                    <select id="from">
+                        <option value="Алматы">Алматы (ALA)</option>
+                        <option value="Астана">Астана (NQZ)</option>
+                        <option value="Шымкент">Шымкент (CIT)</option>
+                    </select>
+                </div>
+                <div class="search-item">
+                    <label>Қайда</label>
+                    <select id="to">
+                        <option value="Стамбул">Стамбул (IST)</option>
+                        <option value="Дубай">Дубай (DXB)</option>
+                        <option value="Анталия">Анталия (AYT)</option>
+                        <option value="Пхукет">Пхукет (HKT)</option>
+                    </select>
+                </div>
+                <div class="search-item">
+                    <label>Ұшу уақыты</label>
+                    <input type="date" id="flight-date">
+                </div>
+                <div class="search-item">
+                    <label>Қайту уақыты</label>
+                    <input type="date" id="return-date">
                 </div>
             </div>
+            <button class="search-btn" onclick="searchTickets()">Ұсыныстарды көру</button>
 
-            <div class="card">
-                <div class="card-img img-antalya"></div>
-                <div class="card-body">
-                    <div class="card-title">Анталия, Түркия (Ыстық тур)</div>
-                    <p class="card-text">"All Inclusive" (Бәрі қосылған) жүйесі. Тікелей рейс, жағажайға жақын люкс қонақ үй.</p>
-                    <div class="price">130 000 ₸ бастап</div>
-                    <button onclick="openTourModal('Түркия')" class="btn-buy">Турға тапсырыс беру</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ӘУЕ БИЛЕТТЕРІ БӨЛІМІ -->
-    <div class="container" id="tickets" style="background-color: #fff; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.03);">
-        <h2>Танымал әуе билеттері</h2>
-        <div class="grid">
-            <div class="card">
-                <div class="card-img img-almaty"></div>
-                <div class="card-body">
-                    <div class="card-title">Алматы ⇄ Астана</div>
-                    <p class="card-text">Екі жаққа бірдей тиімді баға. Багаж қосылған. Күнделікті ыңғайлы рейстер.</p>
-                    <div class="price">35 000 ₸ бастап</div>
-                    <button onclick="openTicketModal('Алматы - Астана')" class="btn-buy btn-blue">Билет брондау</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-img img-aktobe"></div>
-                <div class="card-body">
-                    <div class="card-title">Алматы ⇄ Ақтөбе</div>
-                    <p class="card-text">Батыс бағыты бойынша ең төменгі тарифтер. Сенімді әрі жылдам ұшу.</p>
-                    <div class="price">42 000 ₸ бастап</div>
-                    <button onclick="openTicketModal('Алматы - Ақтөбе')" class="btn-buy btn-blue">Билет брондау</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-img img-tashkent"></div>
-                <div class="card-body">
-                    <div class="card-title">Алматы ⇄ Ташкент</div>
-                    <p class="card-text">Халықаралық танымал рейс. Көршілес Өзбекстан еліне ең арзан билеттер.</p>
-                    <div class="price">55 000 ₸ бастап</div>
-                    <button onclick="openTicketModal('Алматы - Ташкент')" class="btn-buy btn-blue">Билет брондау</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-img img-shymkent"></div>
-                <div class="card-body">
-                    <div class="card-title">Астана ⇄ Шымкент</div>
-                    <p class="card-text">Оңтүстік астанаға тікелей рейстер. Ыңғайлы уақыттар мен жеңілдіктер.</p>
-                    <div class="price">28 000 ₸ бастап</div>
-                    <button onclick="openTicketModal('Астана - Шымкент')" class="btn-buy btn-blue">Билет брондау</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 🆕 О НАС / БІЗ ТУРАЛЫ БӨЛІМІ (ФУТУРИСТІК АЭРОПОРТТАР КОНЦЕПТІ) -->
-    <div class="about-section" id="about">
-        <div class="container" style="padding: 0;">
-            <h2>О нас / Біз туралы</h2>
-            <div class="about-container">
-                <p class="about-text">
-                    <b>TravelTour</b> — тек туристік агенттік қана емес, бұл авиация мен болашақ технологияларының тоғысқан жері. 
-                    Біз өз клиенттерімізге ең тиімді саяхаттарды ұсынып қана қоймай, заманауи архитектура мен 3D модельдеу арқылы 
-                    болашақтың виртуалды әуежай терминалдарын, смарт тіркелу дүңгіршектері (kiosks) мен инновациялық инфрақұрылымдарын жобалаймыз. 
-                    Біздің мақсатымыз — ұшу процесін барынша жайлы әрі футуристік ету!
-                </p>
-                
-                <div class="airport-grid">
-                    <div class="airport-badge">
-                        <h4>✈️ NextGen Terminal</h4>
-                        <p>Өзін-өзі жарықтандыратын материалдардан жасалған, заманауи күту залдары бар ультра-люкс 3D әуежай концепті.</p>
+            <div class="results-section" id="results">
+                <div class="ticket-card">
+                    <div>
+                        <h3 id="ticket-route" style="color:#0f2043;">Алматы ➔ Стамбул</h3>
+                        <p id="ticket-time" style="color:#7f8c8d; margin-top:5px;">Тікелей рейс</p>
                     </div>
-                    <div class="airport-badge">
-                        <h4>🤖 Smart Kiosks</h4>
-                        <p>Пассажирлерді 3 секунд ішінде тіркеуден өткізетін интеллектуалды цифрлық терминалдар жүйесі.</p>
-                    </div>
-                    <div class="airport-badge">
-                        <h4>🌍 Eco-Hub Almaty</h4>
-                        <p>Орталық Азиядағы жасыл технологиялармен жабдықталған ең ірі транзиттік әуежай жобасы.</p>
+                    <div style="text-align: right;">
+                        <div class="price-tag" id="ticket-price" style="margin-bottom:10px;">125 000 ₸</div>
+                        <button class="search-btn" style="padding:8px 20px; font-size:0.9rem;" onclick="openPaymentModal()">Брондау</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 🏖️ 1. ТУРЛАРҒА АРНАЛҒАН ОКОШКА -->
-    <div id="tourModal" class="modal">
-        <div class="modal-content hawaii-bg" id="tourModalContent"></div>
-    </div>
+    <section class="container">
+        <h2>Аптаның ыстық турлары</h2>
+        <div class="deals-grid">
+            <div class="deal-card">
+                <span class="badge">🔥 -30% Жеңілдік</span>
+                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto-format&fit=crop&w=600&q=80" class="deal-img" alt="Дубай">
+                <div class="deal-info">
+                    <h3>Дубай ертегісі (5 жұлдызды қонақүй)</h3>
+                    <p>7 күн / 6 түн, таңғы ас, трансфер және барлық экскурсиялар бағасына кірістірілген.</p>
+                    <div class="deal-price">
+                        <span class="price-tag">240 000 ₸</span>
+                        <button class="search-btn" style="width:auto; padding:10px 25px;" onclick="openPaymentModal()">Таңдау</button>
+                    </div>
+                </div>
+            </div>
+            <div class="deal-card">
+                <span class="badge">💎 Танымал</span>
+                <img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto-format&fit=crop&w=600&q=80" class="deal-img" alt="Стамбул">
+                <div class="deal-info">
+                    <h3>Тарихи Стамбул турлары</h3>
+                    <p>Босфор бұғазындағы круиз, ескі қала ішіне серуен және Босфор көрінісі бар қонақүй.</p>
+                    <div class="deal-price">
+                        <span class="price-tag">185 000 ₸</span>
+                        <button class="search-btn" style="width:auto; padding:10px 25px;" onclick="openPaymentModal()">Таңдау</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- 🎫 2. ӘУЕ БИЛЕТТЕРІНЕ АРНАЛҒАН ОКОШКА -->
-    <div id="ticketModal" class="modal">
-        <div class="modal-content" id="ticketModalContent"></div>
-    </div>
+    <section class="container partners-section">
+        <h2>Біздің ресми серіктестеріміз</h2>
+        <p style="color: #667085; max-width: 600px; margin: 0 auto;">Біз тек сенімді және қауіпсіздігі жоғары отандық жетекші әуе компанияларымен бірлесіп жұмыс жасаймыз:</p>
+        <div class="partners-grid">
+            <div class="partner-card">
+                <div class="partner-icon">✈️</div>
+                Air Astana
+            </div>
+            <div class="partner-card">
+                <div class="partner-icon">🚀</div>
+                FlyArystan
+            </div>
+            <div class="partner-card">
+                <div class="partner-icon">🦅</div>
+                SCAT Airlines
+            </div>
+        </div>
+    </section>
+
+    <section class="airport-showcase">
+        <div class="container">
+            <h2>Біздің Инновациялық 3D Жобамыз</h2>
+            <div class="airport-grid">
+                <img src="https://images.unsplash.com/photo-1490430657723-4d607c1503fc?auto-format&fit=crop&w=800&q=80" class="airport-img" alt="3D Airport Terminal">
+                <div class="airport-details">
+                    <h3>Ауқымды Әуежай Терминалының 3D Моделі</h3>
+                    <p>Біздің топ осы туристік веб-сайтпен шектелмей, 3ds Max ортасында болашақтың халықаралық әуежай интерьерін толықтай модельдеп шықты.</p>
+                    <ul>
+                        <li><strong>Жоғары детальды Күту залдары:</strong> Ыңғайлы орындықтар мен заманауи дизайн.</li>
+                        <li><strong>Check-in дүңгіршектері:</strong> Өздігінен тіркелу терминалдарының нақты үлгісі.</li>
+                        <li><strong>Self-Illumination материалдары:</strong> Түнгі әуежай шамдары мен терезеден көрінетін пейзаж.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="reviews-bg">
+        <div class="container">
+            <h2>Саяхатшылар не дейді?</h2>
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="client-info">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto-format&fit=crop&w=150&q=80" class="client-avatar" alt="Аружан">
+                        <div class="client-name">
+                            <h4>Аружан Н.</h4>
+                            <span>Алматы ➔ Анталия</span>
+                        </div>
+                    </div>
+                    <p class="review-text">"Билет бағалары өте арзан екен. Әсіресе түнгі уақыттағы жеңілдіктермен керемет тур тауып алдық! Рахмет!"</p>
+                </div>
+                <div class="review-card">
+                    <div class="client-info">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto-format&fit=crop&w=150&q=80" class="client-avatar" alt="Мадияр">
+                        <div class="client-name">
+                            <h4>Мадияр Б.</h4>
+                            <span>Астана ➔ Дубай</span>
+                        </div>
+                    </div>
+                    <p class="review-text">"Сайт өте түсінікті, әрі жылдам жұмыс істейді. 3D әуежай жобасы тіпті таңқалдырды, шығармашылық табыс тілеймін!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2>Жиі қойылатын сұрақтар (FAQ)</h2>
+        <div class="faq-box">
+            <div class="faq-item">
+                <div class="faq-question">Билет бағасына багаж кіре ме? <span>+</span></div>
+                <div class="faq-answer">Бастапқы билет бағасына 8 кг қол жүгі кіреді. Қосымша үлкен багаж (23 кг-ға дейін) қосқыңыз келсе, билет құнына небәрі <strong>5 000 ₸</strong> қосылады.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">Билетті қайтару немесе күнін өзгерту мүмкін бе? <span>+</span></div>
+                <div class="faq-answer">Таңдалған әуе компаниясы мен тарифке байланысты. Air Astana, FlyArystan немесе SCAT компанияларының эконом-тиімді тарифтерінде өзгерту белгілі бір айыппұлмен жасалса, флекс-тарифтерде тегін ауыстыру қарастырылған.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container about-section">
+        <h2>Біз туралы</h2>
+        <p class="about-text">
+            Бұл жоба студенттік командалық қорғау жұмысы аясында арнайы әзірленген. Біз Air Astana, FlyArystan және SCAT сияқты ірі әуе тасымалдаушыларымен серіктесе отырып, саяхатшыларға ең қолайлы әрі интуитивті интерфейсті ұсыну арқылы уақыт пен қаражатты үнемдеуге көмектесеміз.
+        </p>
+    </section>
 
     <footer>
-        <p>&copy; 2026 TravelTour Агенттігі мен Авиация Концепт-Лабораториясы. Барлық құқықтар қорғалған.</p>
+        <p>© 2026 TravelTour Студенттік Жобасы. Барлық құқықтар қорғалған.</p>
     </footer>
 
+    <div class="modal-overlay" id="paymentModal">
+        <div class="payment-modal">
+            <span class="close-modal" onclick="closePaymentModal()">&times;</span>
+            <div class="modal-title">Билетті ресімдеу</div>
+            <form onsubmit="processPayment(event)">
+                <div class="form-group">
+                    <label>Жолаушының толық аты-жөні</label>
+                    <input type="text" placeholder="Иван Иванов" required>
+                </div>
+                <div class="form-group">
+                    <label>Карта нөмірі</label>
+                    <input type="text" id="cardNumber" placeholder="4000 1234 5678 9010" maxlength="19" required>
+                </div>
+                <div class="card-extra">
+                    <div class="form-group">
+                        <label>Мерзімі</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CVV / CVC</label>
+                        <input type="password" placeholder="***" maxlength="3" required>
+                    </div>
+                </div>
+                <button type="submit" class="search-btn" style="margin-top: 10px;">Қазір төлеу</button>
+            </form>
+        </div>
+    </div>
+
+    <a href="https://wa.me/77001234567" target="_blank" class="whatsapp-support">
+        <span class="whatsapp-icon">💬</span> Тұрақты қолдау (WhatsApp)
+    </a>
+
     <script>
-        var tourModal = document.getElementById("tourModal");
-        var ticketModal = document.getElementById("ticketModal");
-        var today = new Date().toISOString().split('T')[0];
+        // Сұрақ-жауап аккордеонының логикасы
+        document.querySelectorAll('.faq-question').forEach(item => {
+            item.addEventListener('click', () => {
+                const parent = item.parentElement;
+                parent.classList.toggle('active');
+                const span = item.querySelector('span');
+                span.textContent = parent.classList.contains('active') ? '−' : '+';
+            });
+        });
 
-        // Базалық бағалар
-        var tourPrices = {
-            "Дубай": { "3": "150 000 ₸", "5": "210 000 ₸" },
-            "Түркия": { "3": "130 000 ₸", "5": "185 000 ₸" }
-        };
-
-        var baseTicketPrices = {
-            "Алматы - Астана": 35000,
-            "Алматы - Ақтөбе": 42000,
-            "Алматы - Ташкент": 55000,
-            "Астана - Шымкент": 28000
-        };
-
-        // Уақытқа байланысты баға коэффиценті
-        var timeModifiers = {
-            "Таңертеңгі рейс (08:30)": 3000,   // Сұраныс жоғары, +3000 ₸
-            "Күндізгі рейс (14:15)": 0,       // Базалық баға
-            "Kешкі рейс (21:00)": 5000,       // Ең ыңғайлы уақыт, +5000 ₸
-            "Түнгі рейс (02:45)": -4000       // Түнгі рейс арзанырақ, -4000 ₸
-        };
-
-        function updateTourPriceDisplay() {
-            var country = document.getElementById("tourCountrySelect").value;
-            var days = document.getElementById("tourDaysSelect").value;
-            var price = (tourPrices[country] && tourPrices[country][days]) || "Келісімді";
-            document.getElementById("tourPriceVal").innerText = price;
-        }
-
-        // ⏱️ УАҚЫТ ПЕН БАҒАНЫ ЕСЕПТЕУ ФУНКЦИЯСЫ
-        function updateTicketPriceDisplay() {
-            var selectedRoute = document.getElementById("routeSelect").value;
-            var selectedTime = document.getElementById("timeSelect").value;
+        // ✈️ ДИНАМИКАЛЫҚ БАҒА ЕСЕПТЕУ СКРИПТІ (ЖАҢАРТЫЛДЫ!)
+        function searchTickets() {
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const dateInput = document.getElementById('flight-date').value;
             
-            var basePrice = baseTicketPrices[selectedRoute] || 35000;
-            var modifier = timeModifiers[selectedTime] || 0;
+            if(!dateInput) {
+                alert('Өтініш, ұшу күнін таңдаңыз!');
+                return;
+            }
+
+            // Бүгінгі күн және таңдалған күнді салыстыру логикасы
+            const today = new Date("2026-05-31"); // Жобаның ағымдағы уақыты
+            const flightDate = new Date(dateInput);
             
-            var finalPrice = basePrice + modifier;
+            // Екі күннің арасындағы айырмашылықты есептеу (күн санымен)
+            const timeDiff = flightDate.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (daysDiff < 0) {
+                alert('Өтіп кеткен күнге билет іздеу мүмкін емес!');
+                return;
+            }
+
+            // Базалық бағалар
+            let basePrice = 130000;
+            if (to === "Дубай") basePrice = 160000;
+            if (to === "Анталия") basePrice = 145000;
+            if (to === "Пхукет") basePrice = 210000;
+
+            let tariffMessage = "";
+
+            // Күнге байланысты бағаны құбылу ережесі
+            if (daysDiff > 10) {
+                // Алдын ала сатып алу — 20% Жеңілдік!
+                basePrice = basePrice * 0.8;
+                tariffMessage = `🔥 Алдын ала брондау жеңілдігі (-20%) • Саяхатқа дейін ${daysDiff} күн бар • Жүк +5000 ₸`;
+            } else if (daysDiff <= 3) {
+                // Жақын күнге сатып алу (Шұғыл) — 30% Қымбаттау!
+                basePrice = basePrice * 1.3;
+                tariffMessage = `⚠️ Шұғыл рейс тарифі (+30%) • Саяхатқа небәрі ${daysDiff} күн қалды! • Жүк +5000 ₸`;
+            } else {
+                // Стандартты уақыт аралығы
+                tariffMessage = `☀️ Қалыпты тариф • Саяхатқа дейін ${daysDiff} күн бар • Жүк +5000 ₸`;
+            }
+
+            // Нәтижені экранға шығару
+            document.getElementById('ticket-route').innerText = from + " ➔ " + to;
+            document.getElementById('ticket-time').innerText = tariffMessage;
+            document.getElementById('ticket-price').innerText = Math.round(basePrice).toLocaleString() + " ₸";
+            document.getElementById('results').style.display = 'block';
             
-            // Форматтап шығару (мысалы, 38000 -> "38 000 ₸")
-            document.getElementById("ticketPriceVal").innerText = finalPrice.toLocaleString('ru-RU') + " ₸";
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // --- ТУР ОКОШКАСЫ ---
-        function openTourModal(defaultCountry) {
-            tourModal.style.display = "flex";
-            if(defaultCountry !== "Дубай" && defaultCountry !== "Түркия") { defaultCountry = "Дубай"; }
-
-            document.getElementById("tourModalContent").innerHTML = `
-                <span class="close-btn" onclick="closeTourModal()">&times;</span>
-                <h3>🏖️ Ыстық турды таңдау</h3>
-                <div class="form-group">
-                    <label>Қай елге барғыңыз келеді:</label>
-                    <select id="tourCountrySelect" onchange="updateTourPriceDisplay()">
-                        <option value="Дубай" ${defaultCountry==='Дубай'?'selected':''}>Дубай (БАӘ)</option>
-                        <option value="Түркия" ${defaultCountry==='Түркия'?'selected':''}>Түркия (Анталия)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Демалыс ұзақтығы:</label>
-                    <select id="tourDaysSelect" onchange="updateTourPriceDisplay()">
-                        <option value="3">3 күн / 2 түн</option>
-                        <option value="5">5 күн / 4 түн</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Ұшу күні:</label>
-                    <input type="date" id="tourDateInput" min="${today}" value="${today}">
-                </div>
-                <div class="price-display">Жалпы бағасы: <span id="tourPriceVal">150 000 ₸</span></div>
-                <button onclick="nextTourStep()" class="btn-buy">Жалғастыру</button>
-            `;
-            updateTourPriceDisplay();
+        // Төлем терезесін басқару
+        function openPaymentModal() {
+            document.getElementById('paymentModal').classList.add('open');
         }
 
-        function nextTourStep() {
-            var country = document.getElementById("tourCountrySelect").value;
-            var days = document.getElementById("tourDaysSelect").value;
-            var date = document.getElementById("tourDateInput").value;
-            var price = document.getElementById("tourPriceVal").innerText;
-            if(!country || !days || !date) { alert("Өрістерді толтырыңыз!"); return; }
-            
-            document.getElementById("tourModalContent").innerHTML = `
-                <span class="close-btn" onclick="closeTourModal()">&times;</span>
-                <h3>🏖️ Тапсырысты рәсімдеу</h3>
-                <p><b>Бағыт:</b> ${country} туры<br><b>Ұзақтығы:</b> ${days} күн<br><b>Күні:</b> ${date}<br><b>Бағасы:</b> ${price}</p>
-                <br><button onclick="confirmTourPurchase('${encodeURIComponent(country)}', '${encodeURIComponent(days)}', '${encodeURIComponent(date)}', '${encodeURIComponent(price)}')" class="btn-buy btn-orange">Рәсімдеу</button>
-            `;
+        document.getElementById('cardNumber').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim();
+        });
+
+        document.getElementById('cardExpiry').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/[^\d]/g, '');
+            if (value.length >= 2) { e.target.value = value.slice(0, 2) + '/' + value.slice(2, 4); }
+        });
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('open');
         }
 
-        function confirmTourPurchase(country, days, date, price) {
-            document.getElementById("tourModalContent").innerHTML = `
-                <span class="close-btn" onclick="closeTourModal()">&times;</span>
-                <h3>⚠️ Тапсырысты растау</h3>
-                <p>Менеджермен байланысу үшін өтіңіз:</p>
-                <div class="whatsapp-number-box">📞 +7 (776) 732-88-65</div>
-                <button onclick="finalSendTour('${country}', '${days}', '${date}', '${price}')" class="btn-buy">WhatsApp-қа өту</button>
-            `;
+        function processPayment(event) {
+            event.preventDefault();
+            alert('Төлем сәтті қабылданды! Билет сіздің электронды поштаңызға жіберілді.');
+            closePaymentModal();
         }
-
-        function finalSendTour(country, days, date, price) {
-            var whatsappUrl = "https://wa.me/77767328865?text=Сәлеметсіз бе! Маған " + country + " еліне " + days + " күндік ыстық тур керек. Күні: " + date + ". Бағасы: " + price;
-            window.open(whatsappUrl, '_blank');
-            closeTourModal();
-        }
-
-        function closeTourModal() { tourModal.style.display = "none"; }
-
-        // --- ӘУЕ БИЛЕТІ ОКОШКАСЫ (УАҚЫТҚА БАЙЛАНЫСТЫ БАҒА ӨЗГЕРЕДІ) ---
-        function openTicketModal(defaultRoute) {
-            ticketModal.style.display = "flex";
-            
-            document.getElementById("ticketModalContent").innerHTML = `
-                <span class="close-btn" onclick="closeTicketModal()">&times;</span>
-                <h3>🎫 Әуе билетін таңдау</h3>
-                
-                <div class="form-group">
-                    <label>Қай бағытқа ұшады:</label>
-                    <select id="routeSelect" onchange="updateTicketPriceDisplay()">
-                        <option value="Алматы - Астана" ${defaultRoute==='Алматы - Астана'?'selected':''}>Алматы ⇄ Астана</option>
-                        <option value="Алматы - Ақтөбе" ${defaultRoute==='Алматы - Ақтөбе'?'selected':''}>Алматы ⇄ Ақтөбе</option>
-                        <option value="Алматы - Ташкент" ${defaultRoute==='Алматы - Ташкент'?'selected':''}>Алматы ⇄ Ташкент</option>
-                        <option value="Астана - Шымкент" ${defaultRoute==='Астана - Шымкент'?'selected':''}>Астана ⇄ Шымкент</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Ұшу күні:</label>
-                    <input type="date" id="dateInput" min="${today}" value="${today}">
-                </div>
-
-                <div class="form-group">
-                    <label>Рейс уақыты (Уақытына қарай баға өзгереді):</label>
-                    <select id="timeSelect" onchange="updateTicketPriceDisplay()">
-                        <option value="Күндізгі рейс (14:15)">Күндізгі рейс (14:15) [Стандарт]</option>
-                        <option value="Таңертеңгі рейс (08:30)">Таңертеңгі рейс (08:30) [+3 000 ₸]</option>
-                        <option value="Кешкі рейс (21:00)">Кешкі рейс (21:00) [+5 000 ₸]</option>
-                        <option value="Түнгі рейс (02:45)">Түнгі рейс (02:45) [-4 000 ₸]</option>
-                    </select>
-                </div>
-
-                <div class="price-display">
-                    Билет бағасы: <span id="ticketPriceVal">35 000 ₸</span>
-                </div>
-
-                <button onclick="nextTicketStep()" class="btn-buy btn-blue">Жалғастыру</button>
-            `;
-            updateTicketPriceDisplay();
-        }
-
-        function nextTicketStep() {
-            var route = document.getElementById("routeSelect").value;
-            var date = document.getElementById("dateInput").value;
-            var time = document.getElementById("timeSelect").value;
-            var price = document.getElementById("ticketPriceVal").innerText;
-            if(!route || !date || !time) { alert("Өрістерді толтырыңыз!"); return; }
-            
-            document.getElementById("ticketModalContent").innerHTML = `
-                <span class="close-btn" onclick="closeTicketModal()">&times;</span>
-                <h3>🎫 Тапсырысты рәсімдеу</h3>
-                <p><b>Бағыты:</b> ${route}<br><b>Ұшу күні:</b> ${date}<br><b>Уақыты:</b> ${time}<br><b>Бағасы:</b> ${price}</p>
-                <br><button onclick="confirmTicketPurchase('${encodeURIComponent(route)}', '${encodeURIComponent(date)}', '${encodeURIComponent(time)}', '${encodeURIComponent(price)}')" class="btn-buy btn-orange">Рәсімдеу</button>
-            `;
-        }
-
-        function confirmTicketPurchase(route, date, time, price) {
-            document.getElementById("ticketModalContent").innerHTML = `
-                <span class="close-btn" onclick="closeTicketModal()">&times;</span>
-                <h3>⚠️ Тапсырысты растау</h3>
-                <p>Билетті сатып алуды нақты растау үшін өтіңіз:</p>
-                <div class="whatsapp-number-box">📞 +7 (776) 732-88-65</div>
-                <button onclick="finalSendTicket('${route}', '${date}', '${time}', '${price}')" class="btn-buy">WhatsApp-қа өту</button>
-            `;
-        }
-
-        function finalSendTicket(route, date, time, price) {
-            var whatsappUrl = "https://wa.me/77767328865?text=Сәлеметсіз бе! Маған " + route + " бағытына, " + date + " күніне (" + time + ") әуе билеті керек. Бағасы: " + price;
-            window.open(whatsappUrl, '_blank');
-            closeTicketModal();
-        }
-
-        function closeTicketModal() { ticketModal.style.display = "none"; }
-
-        window.onclick = function(event) {
-            if (event.target == tourModal) { closeTourModal(); }
-            if (event.target == ticketModal) { closeTicketModal(); }
-        }
-    </script></body></html>
+    </script>
+</body>
+</html>
