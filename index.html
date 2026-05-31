@@ -1,15 +1,16 @@
+HTML
 <!DOCTYPE html>
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TravelTour - Әуе билеттері мен Ыстық турлар</title>
+    <title>TravelTour - Әуе билеттерін брондау жүйесі</title>
     <style>
         /* Жалпы баптаулар */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; scroll-behavior: smooth; }
         body { background-color: #f0f4f8; color: #333; position: relative; }
 
-        /* ✈️ БАСТЫ БЕТ (ЖАҢАРТЫЛДЫ: АНИМАЦИЯ МЕН БҰЛЫҢҒЫР ФОН) */
+        /* ✈️ БАСТЫ БЕТ */
         .welcome-section {
             height: 100vh;
             position: relative;
@@ -30,8 +31,8 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(15, 32, 67, 0.7), rgba(27, 55, 107, 0.75)), 
                         url('https://images.unsplash.com/photo-1542296332-2e4473fac563?auto-format&fit=crop&w=1920&q=80') no-repeat center center/cover;
-            filter: blur(8px); /* Фонды бұлыңғыр ету */
-            transform: scale(1.05); /* Бұлыңғыр жиектері көрінбеуі үшін сәл үлкейту */
+            filter: blur(8px);
+            transform: scale(1.05);
             z-index: 1;
         }
 
@@ -41,7 +42,7 @@
             z-index: 2;
             opacity: 0;
             transform: translateY(30px);
-            animation: fadeInUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; /* Плавный ашылу анимациясы */
+            animation: fadeInUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .welcome-section h1 { font-size: 4.5rem; font-weight: 800; margin-bottom: 15px; letter-spacing: 3px; text-shadow: 0 4px 15px rgba(0,0,0,0.4); }
@@ -65,7 +66,7 @@
             text-decoration: none;
             border-radius: 50px;
             box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Плавный ауысу */
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             text-transform: uppercase;
             letter-spacing: 1.5px;
             display: inline-block;
@@ -133,7 +134,7 @@
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ЫСТЫҚ ТУРЛАР КАРТОЧКАЛАРЫ */
+        /* ТАНЫМАЛ ТІКЕЛЕЙ РЕЙСТЕР КАРТОЧКАЛАРЫ */
         .deals-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .deal-card {
             background: white;
@@ -176,16 +177,6 @@
         }
         .partner-card:hover { transform: scale(1.05); border-color: #ff6b6b; background: white; }
         .partner-icon { font-size: 2rem; margin-bottom: 10px; }
-
-        /* 3D МОДЕЛДЕУ (ӘУЕЖАЙ) СЕКЦИЯСЫ */
-        .airport-showcase { background: #f8fafc; }
-        .airport-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-        @media (max-width: 768px) { .airport-grid { grid-template-columns: 1fr; } }
-        .airport-img { width: 100%; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-        .airport-details h3 { font-size: 1.8rem; color: #0f2043; margin-bottom: 15px; }
-        .airport-details ul { list-style: none; margin-top: 15px; }
-        .airport-details ul li { padding: 10px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; }
-        .airport-details ul li::before { content: '✈️'; margin-right: 10px; }
 
         /* ПІКІРЛЕР БӨЛІМІ */
         .reviews-bg { background-color: #1b376b; color: white; }
@@ -256,11 +247,11 @@
 </head>
 <body>
 
-    <!-- ✈️ БАСТЫ БЕТ (ЖАҢАРТЫЛҒАН КОНТЕНТ БЛОГЫ) -->
+    <!-- ✈️ БАСТЫ БЕТ -->
     <section class="welcome-section">
         <div class="welcome-content">
             <h1>TravelTour</h1>
-            <p>Аршагүл, айлар бойы іздеген ең арзан әуе билеттері мен ұмытылмас ыстық турлар тек осында!</p>
+            <p>Аршагүл, ең тиімді әуе билеттері мен танымал халықаралық рейстерді жылдам әрі қауіпсіз брондау!</p>
             <a href="#search" class="cta-btn">Билет іздеу</a>
         </div>
     </section>
@@ -313,19 +304,19 @@
         </div>
     </div>
 
-    <!-- 🔥 СЕКЦИЯ 1: ЫСТЫҚ ТУРЛАР -->
+    <!-- 🔥 СЕКЦИЯ 1: ТАНЫМАЛ РЕЙСТЕР МЕН БИЛЕТТЕР -->
     <section class="container">
-        <h2>Аптаның ыстық турлары</h2>
+        <h2>Ең көп сұранысқа ие бағыттар</h2>
         <div class="deals-grid">
             <div class="deal-card">
-                <span class="badge">🔥 -30% Жеңілдік</span>
+                <span class="badge">🔥 Ең төмен баға</span>
                 <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto-format&fit=crop&w=600&q=80" class="deal-img" alt="Дубай">
                 <div class="deal-info">
-                    <h3>Дубай ертегісі (5 жұлдызды қонақүй)</h3>
-                    <p>7 күн / 6 түн, таңғы ас, трансфер және барлық экскурсиялар бағасына кірістірілген.</p>
+                    <h3>Алматы — Дубай (Екі жаққа)</h3>
+                    <p>Тікелей рейстер, қол жүгі мен ыстық тамақ билет құнына толықтай қосылған.</p>
                     <div class="deal-price">
-                        <span class="price-tag">240 000 ₸</span>
-                        <button class="search-btn" style="width:auto; padding:10px 25px;" onclick="openPaymentModal()">Таңдау</button>
+                        <span class="price-tag">160 000 ₸ бастап</span>
+                        <button class="search-btn" style="width:auto; padding:10px 25px;" onclick="openPaymentModal()">Сатып алу</button>
                     </div>
                 </div>
             </div>
@@ -333,11 +324,11 @@
                 <span class="badge">💎 Танымал</span>
                 <img src="https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto-format&fit=crop&w=600&q=80" class="deal-img" alt="Стамбул">
                 <div class="deal-info">
-                    <h3>Тарихи Стамбул турлары</h3>
-                    <p>Босфор бұғазындағы круиз, ескі қала ішіне серуен және Босфор көрінісі бар қонақүй.</p>
+                    <h3>Астана — Стамбул (Тікелей рейс)</h3>
+                    <p>Ыңғайлы ұшу уақыты, трансферлік жеңілдіктер мен сенімді әуе тасымалдаушылары.</p>
                     <div class="deal-price">
-                        <span class="price-tag">185 000 ₸</span>
-                        <button class="search-btn" style="width:auto; padding:10px 25px;" onclick="openPaymentModal()">Таңдау</button>
+                        <span class="price-tag">130 000 ₸ бастап</span>
+                        <button class="search-btn" style="width:auto; padding:10px 25px;" onclick="openPaymentModal()">Сатып алу</button>
                     </div>
                 </div>
             </div>
@@ -347,7 +338,7 @@
     <!-- ✈️ СЕКЦИЯ 2: СЕРІКТЕСТЕР -->
     <section class="container partners-section">
         <h2>Біздің ресми серіктестеріміз</h2>
-        <p style="color: #667085; max-width: 600px; margin: 0 auto;">Біз тек сенімді және қауіпсіздігі жоғары отандық жетекші әуе компанияларымен бірлесіп жұмыс жасаймыз:</p>
+        <p style="color: #667085; max-width: 600px; margin: 0 auto;">Біз тек сенімді және қауіпсіздігі жоғары отандық жетекші әуе компанияларымен бірлесіп жұмыс жасаймамыз:</p>
         <div class="partners-grid">
             <div class="partner-card">
                 <div class="partner-icon">✈️</div>
@@ -364,26 +355,7 @@
         </div>
     </section>
 
-    <!-- 🛠️ СЕКЦИЯ 3: 3D ӘУЕЖАЙ ЖОБАЛЫҚ СЕКЦИЯСЫ -->
-    <section class="airport-showcase">
-        <div class="container">
-            <h2>Біздің Инновациялық 3D Жобамыз</h2>
-            <div class="airport-grid">
-                <img src="https://images.unsplash.com/photo-1490430657723-4d607c1503fc?auto-format&fit=crop&w=800&q=80" class="airport-img" alt="3D Airport Terminal">
-                <div class="airport-details">
-                    <h3>Ауқымды Әуежай Терминалының 3D Моделі</h3>
-                    <p>Біздің топ осы туристік веб-сайтпен шектелмей, 3ds Max ортасында болашақтың халықаралық әуежай интерьерін толықтай модельдеп шықты.</p>
-                    <ul>
-                        <li><strong>Жоғары детальды Күту залдары:</strong> Ыңғайлы орындықтар мен заманауи дизайн.</li>
-                        <li><strong>Check-in дүңгіршектері:</strong> Өздігінен тіркелу терминалдарының нақты үлгісі.</li>
-                        <li><strong>Self-Illumination материалдары:</strong> Түнгі әуежай шамдары мен терезеден көрінетін пейзаж.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ⭐ СЕКЦИЯ 4: КЛИЕНТТЕРДІҢ ПІКІРЛЕРІ -->
+    <!-- ⭐ СЕКЦИЯ 3: КЛИЕНТТЕРДІҢ ПІКІРЛЕРІ -->
     <section class="reviews-bg">
         <div class="container">
             <h2>Саяхатшылар не дейді?</h2>
@@ -396,7 +368,7 @@
                             <span>Алматы ➔ Анталия</span>
                         </div>
                     </div>
-                    <p class="review-text">"Билет бағалары өте арзан екен. Әсіресе түнгі уақыттағы жеңілдіктермен керемет тур тауып алдық! Рахмет!"</p>
+                    <p class="review-text">"Билет бағалары өте арзан екен. Әсіресе алдын ала брондау жүйесі арқылы керемет жеңілдікпен билет тауып алдық! Рахмет!"</p>
                 </div>
                 <div class="review-card">
                     <div class="client-info">
@@ -406,13 +378,13 @@
                             <span>Астана ➔ Дубай</span>
                         </div>
                     </div>
-                    <p class="review-text">"Сайт өте түсінікті, әрі жылдам жұмыс істейді. 3D әуежай жобасы тіпті таңқалдырды, шығармашылық табыс тілеймін!"</p>
+                    <p class="review-text">"Сайт өте түсінікті, әрі жылдам жұмыс істейді. Билетті бірнеше минутта ресімдеп алдым, интерфейсі өте ыңғайлы екен!"</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ❓ СЕКЦИЯ 5: ЖИІ ҚОЙЫЛАТЫН СҰРАҚТАР -->
+    <!-- ❓ СЕКЦИЯ 4: ЖИІ ҚОЙЫЛАТЫН СҰРАҚТАР -->
     <section class="container">
         <h2>Жиі қойылатын сұрақтар (FAQ)</h2>
         <div class="faq-box">
@@ -431,7 +403,7 @@
     <section class="container about-section">
         <h2>Біз туралы</h2>
         <p class="about-text">
-            Бұл жоба студенттік командалық қорғау жұмысы аясында арнайы әзірленген. Біз Air Astana, FlyArystan және SCAT сияқты ірі әуе тасымалдаушыларымен серіктесе отырып, саяхатшыларға ең қолайлы әрі интуитивті интерфейсті ұсыну арқылы уақыт пен қаражатты үнемдеуге көмектесеміз.
+            Бұл жоба студенттік командалық қорғау жұмысы аясында арнайы әзірленген. Біз Air Astana, FlyArystan және SCAT сияқты ірі әуе тасымалдаушыларымен серіктесе отырып, саяхатшыларға ең қолайлы әрі интуитивті интерфейсті ұсыну арқылы әуе билеттерін жылдам табуға көмектесеміз.
         </p>
     </section>
 
@@ -496,11 +468,10 @@
                 return;
             }
 
-            // Бүгінгі күн және таңдалған күнді салыстыру логикасы
+            // Бүгінгі күн (31 мамыр 2026 жыл)
             const today = new Date("2026-05-31"); 
             const flightDate = new Date(dateInput);
             
-            // Екі күннің арасындағы айырмашылықты есептеу (күн санымен)
             const timeDiff = flightDate.getTime() - today.getTime();
             const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
@@ -509,7 +480,7 @@
                 return;
             }
 
-            // Базалық бағалар
+            // Базалық билет бағалары
             let basePrice = 130000;
             if (to === "Дубай") basePrice = 160000;
             if (to === "Анталия") basePrice = 145000;
@@ -517,21 +488,16 @@
 
             let tariffMessage = "";
 
-            // Күнге байланысты бағаны құбылу ережесі
             if (daysDiff > 10) {
-                // Алдын ала сатып алу — 20% Жеңілдік!
                 basePrice = basePrice * 0.8;
-                tariffMessage = `🔥 Алдын ала брондау жеңілдігі (-20%) • Саяхатқа дейін ${daysDiff} күн бар • Жүк +5000 ₸`;
+                tariffMessage = `🔥 Алдын ала брондау жеңілдігі (-20%) • Рейске дейін ${daysDiff} күн бар • Жүк +5000 ₸`;
             } else if (daysDiff <= 3) {
-                // Жақын күнге сатып алу (Шұғыл) — 30% Қымбаттау!
                 basePrice = basePrice * 1.3;
-                tariffMessage = `⚠️ Шұғыл рейс тарифі (+30%) • Саяхатқа небәрі ${daysDiff} күн қалды! • Жүк +5000 ₸`;
+                tariffMessage = `⚠️ Шұғыл рейс тарифі (+30%) • Ұшуға небәрі ${daysDiff} күн қалды! • Жүк +5000 ₸`;
             } else {
-                // Стандартты уақыт аралығы
-                tariffMessage = `☀️ Қалыпты тариф • Саяхатқа дейін ${daysDiff} күн бар • Жүк +5000 ₸`;
+                tariffMessage = `☀️ Қалыпты тариф • Рейске до дейін ${daysDiff} күн бар • Жүк +5000 ₸`;
             }
 
-            // Нәтижені экранға шығару
             document.getElementById('ticket-route').innerText = from + " ➔ " + to;
             document.getElementById('ticket-time').innerText = tariffMessage;
             document.getElementById('ticket-price').innerText = Math.round(basePrice).toLocaleString() + " ₸";
@@ -560,7 +526,7 @@
 
         function processPayment(event) {
             event.preventDefault();
-            alert('Төлем сәтті қабылданды! Билет сіздің электронды поштаңызға жіберілді.');
+            alert('Төлем сәтті қабылданды! Электронды билет поштаңызға жіберілді.');
             closePaymentModal();
         }
     </script>
