@@ -458,6 +458,94 @@ HTML
         });
 
         // ✈️ ДИНАМИКАЛЫҚ БАҒА ЕСЕПТЕУ СКРИПТІ
+        document.querySelectorAll('.faq-question').forEach(item => {
+    item.addEventListener('click', () => {
+        const parent = item.parentElement;
+        parent.classList.toggle('active');
+        const span = item.querySelector('span');
+        span.textContent = parent.classList.contains('active') ? '−' : '+';
+    });
+});
+
+// SEARCH → BACKEND
+function searchTickets() {
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const dateInput = document.getElementById('flight-date').value;
+
+    if (!dateInput) {
+        alert('Өтініш, ұшу күнін таңдаңыз!');
+        return;
+    }
+
+    fetch("http://localhost:3000/api/ticket")
+    .then(res => res.json())
+    .then(data => {
+
+        document.getElementById('ticket-route').innerText =
+            from + " ➔ " + to;
+
+        document.getElementById('ticket-time').innerText =
+            "Backend арқылы алынған билет";
+
+        document.getElementById('ticket-price').innerText =
+            data.price.toLocaleString() + " ₸";
+
+        document.getElementById('results').style.display = 'block';
+        document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+// PAYMENT → BACKEND BOOKING
+function processPayment(event) {
+    event.preventDefault();
+
+    const from = document.getElementById('from').value;
+    const to = document.getElementById('to').value;
+    const date = document.getElementById('flight-date').value;
+
+    const priceText = document.getElementById('ticket-price').innerText;
+    const price = parseInt(priceText.replace(/\D/g, ''));
+
+    fetch("http://localhost:3000/api/book", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            from_city: from,
+            to_city: to,
+            price: price,
+            date: date
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        closePaymentModal();
+    });
+}
+
+// MODAL
+function openPaymentModal() {
+    document.getElementById('paymentModal').classList.add('open');
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').classList.remove('open');
+}
+
+// CARD formatting (сенде бар)
+document.getElementById('cardNumber').addEventListener('input', function (e) {
+    e.target.value = e.target.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim();
+});
+
+document.getElementById('cardExpiry').addEventListener('input', function (e) {
+    let value = e.target.value.replace(/[^\d]/g, '');
+    if (value.length >= 2) {
+        e.target.value = value.slice(0, 2) + '/' + value.slice(2, 4);
+    }
+});
         function searchTickets() {
             const from = document.getElementById('from').value;
             const to = document.getElementById('to').value;
